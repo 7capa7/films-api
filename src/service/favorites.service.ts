@@ -13,3 +13,11 @@ export async function getAllFavorites(page: number, name: any) {
   if (name) return await repository.find({ where: { name }, skip, take });
   else return await repository.find({ skip, take });
 }
+
+export async function getFavoritesById(id: string) {
+  const repository = Favorites.getRepository();
+  return await repository.findOne({
+    where: { id },
+    relations: ["films", "films.characters"],
+  });
+}
