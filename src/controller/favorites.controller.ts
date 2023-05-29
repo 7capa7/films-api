@@ -10,7 +10,11 @@ import {
 import { Character } from "../entity/Character";
 import { checkIfFilmExist, getFilm, saveFilm } from "../service/film.service";
 import { Film } from "../entity/Film";
-import { getAllFavorites, saveFavorites } from "../service/favorites.service";
+import {
+  getAllFavorites,
+  getFavoritesById,
+  saveFavorites,
+} from "../service/favorites.service";
 
 export async function createFavorites(req: Request, res: Response) {
   const { listName, movieIds } = req.body;
@@ -62,6 +66,19 @@ export async function getFavorites(req: Request, res: Response) {
       favorites,
     })
     .send();
+}
+
+export async function getFavoritesWithGivenId(req: Request, res: Response) {
+  const id = req.query.id as string;
+  const favorites = await getFavoritesById(id);
+  if (favorites) {
+    return res.status(200).json(favorites).send();
+  } else {
+    return res
+      .status(404)
+      .json({ message: "Favorites not found", code: 404 })
+      .send();
+  }
 }
 
 const createOrUpdateCharacters = async (characterNames: string[]) => {

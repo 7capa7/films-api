@@ -21,10 +21,9 @@ export async function saveFilm(filmData: IFilm, characters: Character[]) {
   return await film.save();
 }
 export async function getFilm(filmData: IFilm) {
-  const filmRepository = Film.getRepository();
-  return await filmRepository
-    .createQueryBuilder("film")
-    .leftJoinAndSelect("film.characters", "characters")
-    .where("film.episode_id = :episode_id", { episode_id: filmData.episode_id })
-    .getOne();
+  const repository = Film.getRepository();
+  return await repository.findOne({
+    where: { episode_id: filmData.episode_id },
+    relations: ["characters"],
+  });
 }
