@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm";
 import config from "config";
+import { Character } from "./entity/Character";
+import { Film } from "./entity/Film";
+import { Favorites } from "./entity/Favorites";
 
 export const dataSource = new DataSource({
   type: "postgres",
@@ -9,5 +12,6 @@ export const dataSource = new DataSource({
   host: config.get("dbHost"),
   port: config.get("dbPort"),
   synchronize: true,
-  entities: [],
+  dropSchema: true,
+  entities: [Character, Film, Favorites],
 });

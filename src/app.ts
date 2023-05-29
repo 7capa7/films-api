@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import { dataSource } from "./db-config";
 import { log } from "./utils/logger";
 import filmRouter from "./router/film.router";
+import favoritesRouter from "./router/favorites.router";
 
 const app = express();
 const port = config.get("port");
@@ -21,6 +22,7 @@ dataSource
 
 app.use(bodyParser.json());
 app.use(filmRouter);
+app.use(favoritesRouter);
 
 app.listen(port, async () => {
   log.info(`App started at http://localhost:${port}`);

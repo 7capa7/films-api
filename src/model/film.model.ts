@@ -1,5 +1,7 @@
-export interface Film {
-    title: string;
-    release_date: string;
-    episode_id: number;
-  }
+
+export interface IFilm {
+  episode_id: number;
+  release_date: string;
+  title: string;
+  characters?: string[];
+}
