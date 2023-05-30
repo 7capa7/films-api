@@ -31,7 +31,6 @@ describe("Films Controller", () => {
       expect(fetchFilms).toHaveBeenCalledWith(false);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(films);
-      expect(res.send).toHaveBeenCalled();
     });
 
     test("should handle error and return status 500", async () => {

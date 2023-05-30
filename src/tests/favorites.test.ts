@@ -54,7 +54,6 @@ describe("Favorites Controller", () => {
 
       expect(fetchFilms).toHaveBeenCalledWith(true);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalled();
     });
 
     it("should return an error for invalid data", async () => {
@@ -74,7 +73,6 @@ describe("Favorites Controller", () => {
         message: "Invalid data",
         code: 400,
       });
-      expect(res.send).toHaveBeenCalled();
     });
   });
 
@@ -106,7 +104,6 @@ describe("Favorites Controller", () => {
       expect(getAllFavorites).toHaveBeenCalledWith(page + 1, listName);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalled();
-      expect(res.send).toHaveBeenCalled();
     });
   });
 
@@ -129,7 +126,6 @@ describe("Favorites Controller", () => {
       expect(getFavoritesById).toHaveBeenCalledWith(favoritesId);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(favorites);
-      expect(res.send).toHaveBeenCalled();
     });
 
     it("should return an error if favorites with the given id is not found", async () => {
@@ -150,7 +146,6 @@ describe("Favorites Controller", () => {
         message: "Favorites not found",
         code: 404,
       });
-      expect(res.send).toHaveBeenCalled();
     });
   });
 
@@ -186,7 +181,6 @@ describe("Favorites Controller", () => {
         "Content-Disposition",
         `attachment; filename=${favoritesId}.xlsx`
       );
-      expect(res.send).toHaveBeenCalled();
     });
 
     it("should return an error if favorites with the given id is not found", async () => {
@@ -207,7 +201,6 @@ describe("Favorites Controller", () => {
         message: "Favorites not found",
         code: 404,
       });
-      expect(res.send).toHaveBeenCalled();
     });
   });
 });

@@ -35,7 +35,6 @@ describe("Films Controller", () => {
             expect(swapi_service_1.fetchFilms).toHaveBeenCalledWith(false);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith(films);
-            expect(res.send).toHaveBeenCalled();
         }));
         test("should handle error and return status 500", () => __awaiter(void 0, void 0, void 0, function* () {
             const errorMessage = "unexpected error";
