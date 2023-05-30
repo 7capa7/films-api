@@ -15,7 +15,7 @@ function getFilms(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const films = yield (0, swapi_service_1.fetchFilms)(false);
-            return res.status(200).json(films).send();
+            return res.status(200).json(films);
         }
         catch (e) {
             return res.status(500).send("unexpected error");

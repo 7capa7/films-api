@@ -49,8 +49,7 @@ function createFavorites(req, res) {
                 !movieIds.every((id) => typeof id === "number")) {
                 return res
                     .status(400)
-                    .json({ message: "Invalid data", code: 400 })
-                    .send();
+                    .json({ message: "Invalid data", code: 400 });
             }
             const fetchedFilms = yield (0, swapi_service_1.fetchFilms)(true);
             const films = fetchedFilms.filter((film) => movieIds.includes(film.episode_id));
@@ -65,7 +64,7 @@ function createFavorites(req, res) {
                 }
             }
             const savedFavorites = yield (0, favorites_service_1.saveFavorites)(savedFilms, listName);
-            return res.status(200).json(savedFavorites).send();
+            return res.status(200).json(savedFavorites);
         }
         catch (error) {
             return res
@@ -86,8 +85,7 @@ function getFavorites(req, res) {
                 next = page + 1;
             return res
                 .status(200)
-                .json(Object.assign(Object.assign({}, (next !== null && { next })), { favorites }))
-                .send();
+                .json(Object.assign(Object.assign({}, (next !== null && { next })), { favorites }));
         }
         catch (error) {
             return res
@@ -103,13 +101,12 @@ function getFavoritesWithGivenId(req, res) {
             const favoritesId = req.params.id;
             const favorites = yield (0, favorites_service_1.getFavoritesById)(favoritesId);
             if (favorites) {
-                return res.status(200).json(favorites).send();
+                return res.status(200).json(favorites);
             }
             else {
                 return res
                     .status(404)
-                    .json({ message: "Favorites not found", code: 404 })
-                    .send();
+                    .json({ message: "Favorites not found", code: 404 });
             }
         }
         catch (error) {
@@ -128,8 +125,7 @@ function getFavoritesAsExcel(req, res) {
             if (!favorites) {
                 return res
                     .status(404)
-                    .json({ message: "Favorites not found", code: 404 })
-                    .send();
+                    .json({ message: "Favorites not found", code: 404 });
             }
             const workbook = new exceljs.Workbook();
             const worksheet = workbook.addWorksheet("Favorites");
