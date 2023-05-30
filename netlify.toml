@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+DB_NAME = "films"
+
+DB_USER = "postgres"
+
+DB_PASSWORD = "password"
+
+DB_HOST = "localhost"
+
+DB_PORT = "5432"
+
+APP_PORT = "8080"
