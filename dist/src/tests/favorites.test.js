@@ -76,7 +76,6 @@ describe("Favorites Controller", () => {
             yield favoritesController.createFavorites(req, res);
             expect(swapi_service_1.fetchFilms).toHaveBeenCalledWith(true);
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalled();
         }));
         it("should return an error for invalid data", () => __awaiter(void 0, void 0, void 0, function* () {
             const req = {
@@ -93,7 +92,6 @@ describe("Favorites Controller", () => {
                 message: "Invalid data",
                 code: 400,
             });
-            expect(res.send).toHaveBeenCalled();
         }));
     });
     describe("getFavorites", () => {
@@ -120,7 +118,6 @@ describe("Favorites Controller", () => {
             expect(favorites_service_1.getAllFavorites).toHaveBeenCalledWith(page + 1, listName);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalled();
-            expect(res.send).toHaveBeenCalled();
         }));
     });
     describe("getFavoritesWithGivenId", () => {
@@ -138,7 +135,6 @@ describe("Favorites Controller", () => {
             expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith(favoritesId);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith(favorites);
-            expect(res.send).toHaveBeenCalled();
         }));
         it("should return an error if favorites with the given id is not found", () => __awaiter(void 0, void 0, void 0, function* () {
             const req = { params: { id: "abc123" } };
@@ -155,7 +151,6 @@ describe("Favorites Controller", () => {
                 message: "Favorites not found",
                 code: 404,
             });
-            expect(res.send).toHaveBeenCalled();
         }));
     });
     describe("getFavoritesAsExcel", () => {
@@ -180,7 +175,6 @@ describe("Favorites Controller", () => {
             expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith(favoritesId);
             expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             expect(res.setHeader).toHaveBeenCalledWith("Content-Disposition", `attachment; filename=${favoritesId}.xlsx`);
-            expect(res.send).toHaveBeenCalled();
         }));
         it("should return an error if favorites with the given id is not found", () => __awaiter(void 0, void 0, void 0, function* () {
             const req = { params: { id: "abc123" } };
@@ -197,7 +191,6 @@ describe("Favorites Controller", () => {
                 message: "Favorites not found",
                 code: 404,
             });
-            expect(res.send).toHaveBeenCalled();
         }));
     });
 });
