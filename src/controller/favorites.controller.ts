@@ -68,7 +68,7 @@ export async function getFavorites(req: Request, res: Response) {
     const page = Number(req.params.page) || 1;
     const favorites = await getAllFavorites(page, listName);
     let next = null;
-    if ((await getAllFavorites(page + 1, listName)).length > 0) next = page + 1;
+    if ((await getAllFavorites(page + 1, listName)).length > 0) next = `http://localhost:8080/api/all-favorites/${page + 1}?listName=${listName}`;
     return res
       .status(200)
       .json({

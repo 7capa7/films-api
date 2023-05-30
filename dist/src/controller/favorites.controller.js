@@ -82,7 +82,7 @@ function getFavorites(req, res) {
             const favorites = yield (0, favorites_service_1.getAllFavorites)(page, listName);
             let next = null;
             if ((yield (0, favorites_service_1.getAllFavorites)(page + 1, listName)).length > 0)
-                next = page + 1;
+                next = `http://localhost:8080/api/all-favorites/${page + 1}?listName=${listName}`;
             return res
                 .status(200)
                 .json(Object.assign(Object.assign({}, (next !== null && { next })), { favorites }));
