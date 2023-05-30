@@ -15,7 +15,7 @@ import {
   getFavoritesById,
   saveFavorites,
 } from "../service/favorites.service";
-import * as exceljs from "exceljs";
+import * as exceljs from "exceljs"
 
 export async function createFavorites(req: Request, res: Response) {
   try {
@@ -29,8 +29,7 @@ export async function createFavorites(req: Request, res: Response) {
     ) {
       return res
         .status(400)
-        .json({ message: "Invalid data", code: 400 })
-        .send();
+        .json({ message: "Invalid data", code: 400 });
     }
 
     const fetchedFilms: IFilm[] = await fetchFilms(true);
@@ -55,7 +54,7 @@ export async function createFavorites(req: Request, res: Response) {
 
     const savedFavorites = await saveFavorites(savedFilms, listName);
 
-    return res.status(200).json(savedFavorites).send();
+    return res.status(200).json(savedFavorites);
   } catch (error) {
     return res
       .status(500)
@@ -75,8 +74,7 @@ export async function getFavorites(req: Request, res: Response) {
       .json({
         ...(next !== null && { next }),
         favorites,
-      })
-      .send();
+      });
   } catch (error) {
     return res
       .status(500)
@@ -89,12 +87,11 @@ export async function getFavoritesWithGivenId(req: Request, res: Response) {
     const favoritesId = req.params.id;
     const favorites = await getFavoritesById(favoritesId as string);
     if (favorites) {
-      return res.status(200).json(favorites).send();
+      return res.status(200).json(favorites);
     } else {
       return res
         .status(404)
-        .json({ message: "Favorites not found", code: 404 })
-        .send();
+        .json({ message: "Favorites not found", code: 404 });
     }
   } catch (error) {
     return res
@@ -112,8 +109,7 @@ export async function getFavoritesAsExcel(req: Request, res: Response) {
     if (!favorites) {
       return res
         .status(404)
-        .json({ message: "Favorites not found", code: 404 })
-        .send();
+        .json({ message: "Favorites not found", code: 404 });
     }
 
     const workbook = new exceljs.Workbook();
