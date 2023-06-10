@@ -15,9 +15,9 @@ export async function fetchFilms(characters: boolean) {
 const mapApiResponseToFilms = async (
   apiData: any,
   chars: boolean,
-  fetchCharacters: () => Promise<any[]>
+  fetchCharacters: (characters: boolean) => Promise<any[]>
 ): Promise<IFilm[]> => {
-  const charactersApi: string[] = await fetchCharacters();
+  const charactersApi: string[] = await fetchCharacters(chars);
 
   const films = apiData.map((e: any) => {
     const characterUrls: string[] = e.characters;
@@ -38,8 +38,16 @@ const mapApiResponseToFilms = async (
   return films;
 };
 
-const fetchCharacters = async () => {
-  const response: any[] = (await axios.get("https://swapi.dev/api/people/"))
-    .data.results;
-  return response;
+const fetchCharacters = async (chars: boolean) => {
+  if (chars) {
+    const characters: any[] = [];
+    let url = "https://swapi.dev/api/people/";
+    while (url) {
+      const response = await axios.get(url);
+      const data = response.data;
+      characters.push(...data.results);
+      url = data.next;
+    }
+    return characters;
+  } else return [];
 };

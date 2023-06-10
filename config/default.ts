@@ -5,4 +5,5 @@ export default {
   dbPassword: process.env.DB_PASSWORD,
   dbHost: process.env.DB_HOST,
   dbPort: process.env.DB_PORT,
+  pinoEnabled: true,
 };

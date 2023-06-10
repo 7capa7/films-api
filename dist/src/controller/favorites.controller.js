@@ -38,18 +38,19 @@ const characters_service_1 = require("../service/characters.service");
 const film_service_1 = require("../service/film.service");
 const favorites_service_1 = require("../service/favorites.service");
 const exceljs = __importStar(require("exceljs"));
+const logger_1 = require("../utils/logger");
 function createFavorites(req, res) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { listName, movieIds } = req.body;
             if (!listName ||
+                typeof listName !== "string" ||
+                listName.trim().length === 0 ||
                 !movieIds ||
                 !Array.isArray(movieIds) ||
                 !movieIds.every((id) => typeof id === "number")) {
-                return res
-                    .status(400)
-                    .json({ message: "Invalid data", code: 400 });
+                return res.status(400).json({ message: "Invalid data", code: 400 });
             }
             const fetchedFilms = yield (0, swapi_service_1.fetchFilms)(true);
             const films = fetchedFilms.filter((film) => movieIds.includes(film.episode_id));
@@ -63,13 +64,13 @@ function createFavorites(req, res) {
                     savedFilms.push(savedFilm);
                 }
             }
-            const savedFavorites = yield (0, favorites_service_1.saveFavorites)(savedFilms, listName);
+            const savedFavorites = yield (0, favorites_service_1.saveFavorites)(savedFilms, listName.trim());
             return res.status(200).json(savedFavorites);
         }
-        catch (error) {
-            return res
-                .status(500)
-                .json({ message: "Internal server error", code: 500 });
+        catch (e) {
+            const errorMessage = e.message || "Unexpected error";
+            logger_1.log.error(errorMessage + " [createFavorites]");
+            return res.status(500).send(errorMessage);
         }
     });
 }
@@ -83,14 +84,12 @@ function getFavorites(req, res) {
             let next = null;
             if ((yield (0, favorites_service_1.getAllFavorites)(page + 1, listName)).length > 0)
                 next = `http://localhost:8080/api/all-favorites/${page + 1}?listName=${listName}`;
-            return res
-                .status(200)
-                .json(Object.assign(Object.assign({}, (next !== null && { next })), { favorites }));
+            return res.status(200).json(Object.assign(Object.assign({}, (next !== null && { next })), { favorites }));
         }
-        catch (error) {
-            return res
-                .status(500)
-                .json({ message: "Internal server error", code: 500 });
+        catch (e) {
+            const errorMessage = e.message || "Unexpected error";
+            logger_1.log.error(errorMessage + " [getFavorites]");
+            return res.status(500).send(errorMessage);
         }
     });
 }
@@ -99,6 +98,9 @@ function getFavoritesWithGivenId(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const favoritesId = req.params.id;
+            if (!isUUID(favoritesId)) {
+                return res.status(400).json({ message: "Invalid ID", code: 400 });
+            }
             const favorites = yield (0, favorites_service_1.getFavoritesById)(favoritesId);
             if (favorites) {
                 return res.status(200).json(favorites);
@@ -109,10 +111,10 @@ function getFavoritesWithGivenId(req, res) {
                     .json({ message: "Favorites not found", code: 404 });
             }
         }
-        catch (error) {
-            return res
-                .status(500)
-                .json({ message: "Internal server error", code: 500 });
+        catch (e) {
+            const errorMessage = e.message || "Unexpected error";
+            logger_1.log.error(errorMessage + " [getFavoritesWithGivenId]");
+            return res.status(500).send(errorMessage);
         }
     });
 }
@@ -120,6 +122,9 @@ exports.getFavoritesWithGivenId = getFavoritesWithGivenId;
 function getFavoritesAsExcel(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const id = req.params.id;
+        if (!isUUID(id)) {
+            return res.status(400).json({ message: "Invalid ID", code: 400 });
+        }
         try {
             const favorites = yield (0, favorites_service_1.getFavoritesById)(id);
             if (!favorites) {
@@ -152,10 +157,10 @@ function getFavoritesAsExcel(req, res) {
             res.setHeader("Content-Disposition", `attachment; filename=${id}.xlsx`);
             res.send(buffer);
         }
-        catch (error) {
-            return res
-                .status(500)
-                .json({ message: "Internal server error", code: 500 });
+        catch (e) {
+            const errorMessage = e.message || "Unexpected error";
+            logger_1.log.error(errorMessage + " [getFavoritesAsExcel]");
+            return res.status(500).send(errorMessage);
         }
     });
 }
@@ -190,3 +195,7 @@ const createOrUpdateFilm = (filmData, charactersData) => __awaiter(void 0, void 
     }
     catch (error) { }
 });
+const isUUID = (value) => {
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    return uuidRegex.test(value);
+};

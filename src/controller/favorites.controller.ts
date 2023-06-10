@@ -15,7 +15,8 @@ import {
   getFavoritesById,
   saveFavorites,
 } from "../service/favorites.service";
-import * as exceljs from "exceljs"
+import * as exceljs from "exceljs";
+import { log } from "../utils/logger";
 
 export async function createFavorites(req: Request, res: Response) {
   try {
@@ -23,13 +24,13 @@ export async function createFavorites(req: Request, res: Response) {
 
     if (
       !listName ||
+      typeof listName !== "string" ||
+      listName.trim().length === 0 ||
       !movieIds ||
       !Array.isArray(movieIds) ||
       !movieIds.every((id) => typeof id === "number")
     ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid data", code: 400 });
+      return res.status(400).json({ message: "Invalid data", code: 400 });
     }
 
     const fetchedFilms: IFilm[] = await fetchFilms(true);
@@ -52,13 +53,13 @@ export async function createFavorites(req: Request, res: Response) {
       }
     }
 
-    const savedFavorites = await saveFavorites(savedFilms, listName);
+    const savedFavorites = await saveFavorites(savedFilms, listName.trim());
 
     return res.status(200).json(savedFavorites);
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal server error", code: 500 });
+  } catch (e: any) {
+    const errorMessage = e.message || "Unexpected error";
+    log.error(errorMessage + " [createFavorites]");
+    return res.status(500).send(errorMessage);
   }
 }
 
@@ -68,24 +69,30 @@ export async function getFavorites(req: Request, res: Response) {
     const page = Number(req.params.page) || 1;
     const favorites = await getAllFavorites(page, listName);
     let next = null;
-    if ((await getAllFavorites(page + 1, listName)).length > 0) next = `http://localhost:8080/api/all-favorites/${page + 1}?listName=${listName}`;
-    return res
-      .status(200)
-      .json({
-        ...(next !== null && { next }),
-        favorites,
-      });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal server error", code: 500 });
+    if ((await getAllFavorites(page + 1, listName)).length > 0)
+      next = `http://localhost:8080/api/all-favorites/${
+        page + 1
+      }?listName=${listName}`;
+    return res.status(200).json({
+      ...(next !== null && { next }),
+      favorites,
+    });
+  } catch (e: any) {
+    const errorMessage = e.message || "Unexpected error";
+    log.error(errorMessage + " [getFavorites]");
+    return res.status(500).send(errorMessage);
   }
 }
 
 export async function getFavoritesWithGivenId(req: Request, res: Response) {
   try {
     const favoritesId = req.params.id;
-    const favorites = await getFavoritesById(favoritesId as string);
+
+    if (!isUUID(favoritesId)) {
+      return res.status(400).json({ message: "Invalid ID", code: 400 });
+    }
+
+    const favorites = await getFavoritesById(favoritesId);
     if (favorites) {
       return res.status(200).json(favorites);
     } else {
@@ -93,15 +100,19 @@ export async function getFavoritesWithGivenId(req: Request, res: Response) {
         .status(404)
         .json({ message: "Favorites not found", code: 404 });
     }
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal server error", code: 500 });
+  } catch (e: any) {
+    const errorMessage = e.message || "Unexpected error";
+    log.error(errorMessage + " [getFavoritesWithGivenId]");
+    return res.status(500).send(errorMessage);
   }
 }
 
 export async function getFavoritesAsExcel(req: Request, res: Response) {
   const id = req.params.id;
+
+  if (!isUUID(id)) {
+    return res.status(400).json({ message: "Invalid ID", code: 400 });
+  }
 
   try {
     const favorites = await getFavoritesById(id);
@@ -148,10 +159,10 @@ export async function getFavoritesAsExcel(req: Request, res: Response) {
     res.setHeader("Content-Disposition", `attachment; filename=${id}.xlsx`);
 
     res.send(buffer);
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal server error", code: 500 });
+  } catch (e: any) {
+    const errorMessage = e.message || "Unexpected error";
+    log.error(errorMessage + " [getFavoritesAsExcel]");
+    return res.status(500).send(errorMessage);
   }
 }
 
@@ -189,4 +200,10 @@ const createOrUpdateFilm = async (
       return await getFilm(filmData);
     }
   } catch (error) {}
+};
+
+const isUUID = (value: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(value);
 };
