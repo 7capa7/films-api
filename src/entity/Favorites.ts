@@ -4,15 +4,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { v4 } from "uuid";
 import { Film } from "./Film";
 
 @Entity()
 export class Favorites extends BaseEntity {
-  @PrimaryColumn()
-  id: string = v4();
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

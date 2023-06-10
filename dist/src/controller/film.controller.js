@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFilms = void 0;
 const swapi_service_1 = require("../service/swapi.service");
+const logger_1 = require("../utils/logger");
 function getFilms(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -18,7 +19,9 @@ function getFilms(req, res) {
             return res.status(200).json(films);
         }
         catch (e) {
-            return res.status(500).send("unexpected error");
+            const errorMessage = e.message || "Unexpected error";
+            logger_1.log.error(errorMessage + " [getFilms]");
+            return res.status(500).send(errorMessage);
         }
     });
 }

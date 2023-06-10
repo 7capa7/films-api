@@ -77,9 +77,25 @@ describe("Favorites Controller", () => {
             expect(swapi_service_1.fetchFilms).toHaveBeenCalledWith(true);
             expect(res.status).toHaveBeenCalledWith(200);
         }));
-        it("should return an error for invalid data", () => __awaiter(void 0, void 0, void 0, function* () {
+        it("should return an error if moviesIds is null", () => __awaiter(void 0, void 0, void 0, function* () {
             const req = {
                 body: { listName: "My Favorites", movieIds: null },
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            yield favoritesController.createFavorites(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Invalid data",
+                code: 400,
+            });
+        }));
+        it("should return an error if listName is not string", () => __awaiter(void 0, void 0, void 0, function* () {
+            const req = {
+                body: { listName: 12, movieIds: [1, 3] },
             };
             const res = {
                 status: jest.fn().mockReturnThis(),
@@ -122,7 +138,7 @@ describe("Favorites Controller", () => {
     });
     describe("getFavoritesWithGivenId", () => {
         it("should get favorites with the given id", () => __awaiter(void 0, void 0, void 0, function* () {
-            const favoritesId = "abc123";
+            const favoritesId = "7c0564a9-231b-4a5e-9c37-52f3e992f18c";
             const favorites = { listName: "My Favorites", films: [] };
             favorites_service_1.getFavoritesById.mockResolvedValue(favorites);
             const req = { params: { id: favoritesId } };
@@ -137,7 +153,9 @@ describe("Favorites Controller", () => {
             expect(res.json).toHaveBeenCalledWith(favorites);
         }));
         it("should return an error if favorites with the given id is not found", () => __awaiter(void 0, void 0, void 0, function* () {
-            const req = { params: { id: "abc123" } };
+            const req = {
+                params: { id: "7c0564a9-231b-4a5e-9c37-52f3e992f18c" },
+            };
             const res = {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn().mockReturnThis(),
@@ -145,17 +163,33 @@ describe("Favorites Controller", () => {
             };
             favorites_service_1.getFavoritesById.mockResolvedValue(null);
             yield favoritesController.getFavoritesWithGivenId(req, res);
-            expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith("abc123");
+            expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith("7c0564a9-231b-4a5e-9c37-52f3e992f18c");
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.json).toHaveBeenCalledWith({
                 message: "Favorites not found",
                 code: 404,
             });
         }));
+        it("should return an error if id is not valid UUID", () => __awaiter(void 0, void 0, void 0, function* () {
+            const req = { params: { id: "uuid-123" } };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            favorites_service_1.getFavoritesById.mockResolvedValue(null);
+            yield favoritesController.getFavoritesWithGivenId(req, res);
+            expect(favorites_service_1.getFavoritesById).not.toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Invalid ID",
+                code: 400,
+            });
+        }));
     });
     describe("getFavoritesAsExcel", () => {
         it("should get favorites as Excel file", () => __awaiter(void 0, void 0, void 0, function* () {
-            const favoritesId = "abc123";
+            const favoritesId = "7c0564a9-231b-4a5e-9c37-52f3e992f18c";
             const favorites = {
                 listName: "My Favorites",
                 films: [
@@ -177,7 +211,9 @@ describe("Favorites Controller", () => {
             expect(res.setHeader).toHaveBeenCalledWith("Content-Disposition", `attachment; filename=${favoritesId}.xlsx`);
         }));
         it("should return an error if favorites with the given id is not found", () => __awaiter(void 0, void 0, void 0, function* () {
-            const req = { params: { id: "abc123" } };
+            const req = {
+                params: { id: "7c0564a9-231b-4a5e-9c37-52f3e992f18c" },
+            };
             const res = {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn().mockReturnThis(),
@@ -185,11 +221,27 @@ describe("Favorites Controller", () => {
             };
             favorites_service_1.getFavoritesById.mockResolvedValue(null);
             yield favoritesController.getFavoritesAsExcel(req, res);
-            expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith("abc123");
+            expect(favorites_service_1.getFavoritesById).toHaveBeenCalledWith("7c0564a9-231b-4a5e-9c37-52f3e992f18c");
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.json).toHaveBeenCalledWith({
                 message: "Favorites not found",
                 code: 404,
+            });
+        }));
+        it("should return an error if id is not valid UUID", () => __awaiter(void 0, void 0, void 0, function* () {
+            const req = { params: { id: "uuid-123" } };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            favorites_service_1.getFavoritesById.mockResolvedValue(null);
+            yield favoritesController.getFavoritesAsExcel(req, res);
+            expect(favorites_service_1.getFavoritesById).not.toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Invalid ID",
+                code: 400,
             });
         }));
     });

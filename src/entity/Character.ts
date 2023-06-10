@@ -1,10 +1,9 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { v4 } from "uuid";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Character extends BaseEntity {
-  @PrimaryColumn()
-  id: string = v4();
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   name: string;

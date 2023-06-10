@@ -11,16 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Favorites = void 0;
 const typeorm_1 = require("typeorm");
-const uuid_1 = require("uuid");
 const Film_1 = require("./Film");
 let Favorites = class Favorites extends typeorm_1.BaseEntity {
-    constructor() {
-        super(...arguments);
-        this.id = (0, uuid_1.v4)();
-    }
 };
 __decorate([
-    (0, typeorm_1.PrimaryColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
 ], Favorites.prototype, "id", void 0);
 __decorate([

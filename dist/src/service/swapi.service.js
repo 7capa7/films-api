@@ -24,7 +24,7 @@ function fetchFilms(characters) {
 }
 exports.fetchFilms = fetchFilms;
 const mapApiResponseToFilms = (apiData, chars, fetchCharacters) => __awaiter(void 0, void 0, void 0, function* () {
-    const charactersApi = yield fetchCharacters();
+    const charactersApi = yield fetchCharacters(chars);
     const films = apiData.map((e) => {
         const characterUrls = e.characters;
         const charactersFiltered = charactersApi.filter((item) => characterUrls.includes(item.url));
@@ -36,8 +36,18 @@ const mapApiResponseToFilms = (apiData, chars, fetchCharacters) => __awaiter(voi
     });
     return films;
 });
-const fetchCharacters = () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = (yield axios_1.default.get("https://swapi.dev/api/people/"))
-        .data.results;
-    return response;
+const fetchCharacters = (chars) => __awaiter(void 0, void 0, void 0, function* () {
+    if (chars) {
+        const characters = [];
+        let url = "https://swapi.dev/api/people/";
+        while (url) {
+            const response = yield axios_1.default.get(url);
+            const data = response.data;
+            characters.push(...data.results);
+            url = data.next;
+        }
+        return characters;
+    }
+    else
+        return [];
 });

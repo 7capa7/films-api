@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.log = void 0;
 const pino_1 = __importDefault(require("pino"));
 const dayjs_1 = __importDefault(require("dayjs"));
+const config_1 = __importDefault(require("config"));
 exports.log = (0, pino_1.default)({
     transport: {
         target: "pino-pretty",
@@ -15,4 +16,5 @@ exports.log = (0, pino_1.default)({
         pid: false,
     },
     timestamp: () => `,"time":"${(0, dayjs_1.default)().format()}"`,
+    enabled: config_1.default.get("pinoEnabled"),
 });
